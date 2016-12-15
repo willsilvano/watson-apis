@@ -1,0 +1,33 @@
+version: '2'
+ 
+volumes:
+
+ watson-postgres-data:
+   driver: local
+    
+services:
+ 
+   db:
+     image: postgres:9.3
+     container_name: watson-postgres
+     volumes:
+      - watson-postgres-data:/var/lib/postgresql/data
+     ports:
+      - "5432:5432"
+     environment:
+      - POSTGRES_PASSWORD=watson
+      - POSTGRES_DB=watson
+      - POSTGRES_USER=watson
+     
+   web:
+     image: wsmaria/python
+     container_name: watson-python
+     command: python manage.py runserver 0.0.0.0:8000
+     volumes:
+       - .:/code
+     ports:
+       - "8000:8000"
+     depends_on:
+       - db
+     links:
+       - db
